@@ -410,13 +410,13 @@ estimate_distance_parameter <- function(cds,
     dist_matrix <- calc_dist_matrix(win_range)
 
     distance_parameter <- find_distance_parameter(dist_matrix,
-                        win_range,
-                        maxit = maxit,
-                        null_rho = 0,
-                        s,
-                        distance_constraint = distance_constraint,
-                        distance_parameter_convergence =
-                          distance_parameter_convergence)
+                            win_range,
+                            maxit = maxit,
+                            null_rho = 0,
+                            s,
+                            distance_constraint = distance_constraint,
+                            distance_parameter_convergence =
+                              distance_parameter_convergence)
 
     if (!is(distance_parameter, "numeric")) next()
     distance_parameters = c(distance_parameters, distance_parameter)
@@ -658,12 +658,11 @@ generate_windows <- function(window, genomic_coords) {
 }
 
 get_genomic_range <- function(grs, cds, win) {
-  end1 <- as.numeric(as.character(GenomicRanges::end(grs[win])))
+  end1 <- as.numeric(as.character(GenomicRanges::end(grs[win]))) #type wrappers seem unnecessary
   end2 <- as.numeric(as.character(GenomicRanges::start(grs[win])))
-  win_range <- cds[(fData(cds)$bp1 < end1 &
-                                fData(cds)$bp1 > end2) |
-                               (fData(cds)$bp2 < end1 &
-                                  fData(cds)$bp2 > end2), ]
+  # filter for cds with either end contained in win
+  win_range <- cds[(fData(cds)$bp1 < end1 & fData(cds)$bp1 > end2) |
+                   (fData(cds)$bp2 < end1 & fData(cds)$bp2 > end2), ]
   win_range <-
     win_range[as.character(fData(win_range)$chr) ==
                 gsub("chr", "",
@@ -676,12 +675,12 @@ get_genomic_range <- function(grs, cds, win) {
 }
 
 find_distance_parameter <- function(dist_mat,
-                       gene_range,
-                       maxit,
-                       null_rho,
-                       s,
-                       distance_constraint,
-                       distance_parameter_convergence) {
+                             gene_range,
+                             maxit,
+                             null_rho,
+                             s,
+                             distance_constraint,
+                             distance_parameter_convergence) {
   if (sum(dist_mat > distance_constraint)/2 < 1) {
     return("No long edges")
   }
